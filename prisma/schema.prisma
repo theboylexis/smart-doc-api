@@ -20,4 +20,18 @@ model User {
   name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  documents Document[]
+}
+
+model Document {
+  id        String @id @default(uuid())
+  fileName  String
+  fileUrl   String
+  fileType  String
+  fileSize  Int
+  status    String @default("uploaded")
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
