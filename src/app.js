@@ -19,6 +19,18 @@ app.get('/', (req, res) => {
     res.json({ message: 'Welcome to Smart Doc API' });
 });
 
+//Mounting routes
+const authRoutes = require("./routes/authRoutes");
+app.use("/api/auth", authRoutes);
+
+//Auth middleware
+const authMiddleware = require("./middleware/authMiddleware");
+
+//Protected routes
+app.get("/api/protected", authMiddleware, (req, res) => {
+    res.json({ message: "You are authenticated!", user: req.user });
+});
+
 // Error handler middleware
 app.use(errorHandler);
 
