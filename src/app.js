@@ -23,8 +23,13 @@ app.get('/', (req, res) => {
 const authRoutes = require("./routes/authRoutes");
 app.use("/api/auth", authRoutes);
 
+
+
 //Auth middleware
 const authMiddleware = require("./middleware/authMiddleware");
+
+const uploadRoutes = require("./routes/uploadRoutes");
+app.use("/api/documents", authMiddleware, uploadRoutes);
 
 //Protected routes
 app.get("/api/protected", authMiddleware, (req, res) => {
