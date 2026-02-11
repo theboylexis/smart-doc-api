@@ -1,9 +1,11 @@
 const cloudinary = require("../config/cloudinary");
-const { PrismaClient } = require("../generated/prisma");
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const uploadDocument = async (file, userId) => {
-    const result = await cloudinary.uploader.upload(file.path, { folder: "smart-doc-api", resource_type: "auto" });
+    const b64 = file.buffer.toString("base64");
+    const dataUri = `data:${file.mimetype};base64,${b64}`;
+    const result = await cloudinary.uploader.upload(dataUri, { folder: "smart-doc-api", resource_type: "auto" });
 
     const document = await prisma.document.create({
         data: {
