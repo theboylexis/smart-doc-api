@@ -32,6 +32,19 @@ model Document {
   status    String @default("uploaded")
   userId    String
   user      User     @relation(fields: [userId], references: [id])
+  analyses  Analysis[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Analysis {
+  id        String @id @default(uuid())
+  documentId String
+  document  Document @relation(fields: [documentId], references: [id])
+  type       String   // "summary", "key_points", "sentiment", "custom"
+  prompt     String
+  result     Json
+  model      String   // e.g. "gpt-4o-mini"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
