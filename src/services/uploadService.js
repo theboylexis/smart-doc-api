@@ -5,27 +5,27 @@ const prisma = new PrismaClient();
 const uploadDocument = async (file, userId) => {
     const b64 = file.buffer.toString("base64");
     const dataUri = `data:${file.mimetype};base64,${b64}`;
-    const result = await cloudinary.uploader.upload(dataUri, { folder: "smart-doc-api", resource_type: "auto" });
+    const result = await cloudinary.uploader.upload(dataUri, { folder: "smart-doc-api", resource_type: "raw", access_mode: "public" });
 
     const document = await prisma.document.create({
         data: {
             fileName: file.originalname,
-            fileUrl:  result.secure_url,
+            fileUrl: result.secure_url,
             fileType: file.mimetype,
             fileSize: file.size,
-            userId:   userId
+            userId: userId
         },
     });
     return document;
 };
 
 const getUserDocuments = async (userId) => {
-    const documents = await prisma.document.findMany({ where: {userId: userId}});
+    const documents = await prisma.document.findMany({ where: { userId: userId } });
     return documents;
 };
 
 const getDocumentById = async (documentId, userId) => {
-    const document = await prisma.document.findUnique({where: {id: documentId}});
+    const document = await prisma.document.findUnique({ where: { id: documentId } });
     if (!document || document.userId !== userId) {
         throw new Error("Document not found");
     }

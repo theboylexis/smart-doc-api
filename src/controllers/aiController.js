@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 async function analyze(req, res, next) {
     try {
         const { documentId } = req.params;
-        const { type = DEFAULT_TYPE, customPrompt } = req.body;
+        const { type = DEFAULT_TYPE, customPrompt } = req.body || {};
 
         // 1. Fetch the document and verify ownership
         const document = await prisma.document.findUnique({
