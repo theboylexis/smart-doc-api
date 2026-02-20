@@ -6,7 +6,6 @@ module.exports = {
     setupFiles: ["./tests/setup.js"],
     verbose: true,
     forceExit: true,
-    clearMocks: true,
     moduleNameMapper: {
         // Map local config modules to mocks
         "^.*/config/redis$": path.resolve(__dirname, "tests/__mocks__/redis.js"),

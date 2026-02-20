@@ -7,12 +7,21 @@ const AUTH_HEADER = "Bearer valid-token";
 const validUUID = "f6d0f776-9319-4992-b186-f2ad812cdaf9";
 
 describe("AI Endpoints", () => {
-    beforeEach(() => jest.clearAllMocks());
+    beforeEach(() => {
+        // Only reset Prisma mocks, NOT BullMQ/ioredis mocks
+        Object.values(mockPrisma).forEach((model) => {
+            if (typeof model === "object" && model !== null) {
+                Object.values(model).forEach((fn) => {
+                    if (typeof fn?.mockClear === "function") fn.mockClear();
+                });
+            }
+        });
+    });
 
     // ─── POST /api/ai/analyze/:documentId ───────────────────
 
     describe("POST /api/ai/analyze/:documentId", () => {
-        it("should analyze a document successfully", async () => {
+        it("should queue a document analysis (202 Accepted)", async () => {
             mockPrisma.document.findUnique.mockResolvedValue({
                 id: validUUID,
                 fileName: "test.pdf",
@@ -24,18 +33,19 @@ describe("AI Endpoints", () => {
                 id: "analysis-1",
                 documentId: validUUID,
                 type: "summary",
-                result: { summary: "Test summary" },
+                status: "pending",
                 model: "gpt-4o-mini",
             });
-            mockPrisma.document.update.mockResolvedValue({});
+            mockPrisma.analysis.update.mockResolvedValue({});
 
             const res = await request(app)
                 .post(`/api/ai/analyze/${validUUID}`)
                 .set("Authorization", AUTH_HEADER)
                 .send({ type: "summary" });
 
-            expect(res.status).toBe(201);
-            expect(res.body.analysis).toBeDefined();
+            expect(res.status).toBe(202);
+            expect(res.body.message).toBe("Analysis queued for processing");
+            expect(res.body.analysis.status).toBe("pending");
         });
 
         it("should return 404 for non-existent document", async () => {
@@ -79,7 +89,7 @@ describe("AI Endpoints", () => {
                 userId: "user-123",
             });
             mockPrisma.analysis.findMany.mockResolvedValue([
-                { id: "a-1", type: "summary", result: { summary: "Test" } },
+                { id: "a-1", type: "summary", status: "completed", result: { summary: "Test" } },
             ]);
 
             const res = await request(app)
@@ -88,6 +98,7 @@ describe("AI Endpoints", () => {
 
             expect(res.status).toBe(200);
             expect(res.body.analyses).toHaveLength(1);
+            expect(res.body.analyses[0].status).toBe("completed");
         });
 
         it("should return 404 if document not owned by user", async () => {

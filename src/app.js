@@ -43,6 +43,12 @@ app.use("/api/ai", authMiddleware, aiLimiter, aiRoutes);
 const uploadRoutes = require("./routes/uploadRoutes");
 app.use("/api/documents", authMiddleware, uploadRoutes);
 
+const webhookRoutes = require("./routes/webhookRoutes");
+app.use("/api/webhooks", authMiddleware, webhookRoutes);
+
+// Start BullMQ worker (processes analysis jobs in the background)
+require("./jobs/analysisWorker");
+
 
 //Protected routes
 app.get("/api/protected", authMiddleware, (req, res) => {
