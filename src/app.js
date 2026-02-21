@@ -4,14 +4,17 @@ const helmet = require('helmet');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
 const errorHandler = require('./middleware/errorHandler');
+const requestLogger = require('./middleware/requestLogger');
 const { globalLimiter, authLimiter, aiLimiter } = require('./middleware/rateLimiter');
 const app = express();
 
 // Middleware
-app.use(helmet());        // Security headers
-app.use(cors());          // Enable CORS
-app.use(express.json());  // Parse JSON request bodies
-app.use(globalLimiter);   // Global rate limit
+app.use(helmet());          // Security headers
+app.use(cors());            // Enable CORS
+app.use(express.json());    // Parse JSON request bodies
+app.use(requestLogger);     // Log all incoming requests
+app.use(globalLimiter);     // Global rate limit
+
 
 // API Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {

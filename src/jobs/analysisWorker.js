@@ -6,6 +6,7 @@ const { extractText } = require("../services/textExtractorService");
 const { getPrompt } = require("../config/aiPrompts");
 const { fireWebhook } = require("../services/webhookService");
 const { getIo } = require("../config/socket");
+const logger = require("../config/logger");
 
 const prisma = new PrismaClient();
 
@@ -14,7 +15,7 @@ const analysisWorker = new Worker(
     async (job) => {
         const { analysisId, documentId, userId, type, customPrompt } = job.data;
 
-        console.log(`[Worker] Processing job ${job.id} — analysis ${analysisId}`);
+        logger.info(`Processing job ${job.id}`, { analysisId });
 
         // 1. Mark as processing
         await prisma.analysis.update({
@@ -54,7 +55,7 @@ const analysisWorker = new Worker(
             data: { status: "analyzed" },
         });
 
-        console.log(`[Worker] Completed analysis ${analysisId}`);
+        logger.info(`Completed analysis`, { analysisId });
 
         // 7. Fire webhooks
         await fireWebhook(userId, "analysis.completed", {
@@ -73,9 +74,9 @@ const analysisWorker = new Worker(
                 type,
                 status: "completed",
             });
-            console.log(`[Socket] Emitted analysis.completed to user:${userId}`);
+            logger.info(`Emitted analysis.completed`, { userId });
         } catch (err) {
-            console.warn("[Socket] Could not emit event:", err.message);
+            logger.warn("Could not emit socket event", { error: err.message });
         }
 
         return { analysisId, status: "completed" };
@@ -88,7 +89,7 @@ const analysisWorker = new Worker(
 
 // Handle failed jobs
 analysisWorker.on("failed", async (job, err) => {
-    console.error(`[Worker] Job ${job?.id} failed:`, err.message);
+    logger.error(`Job ${job?.id} failed`, { error: err.message });
 
     if (job?.data?.analysisId) {
         try {
@@ -104,7 +105,7 @@ analysisWorker.on("failed", async (job, err) => {
                 error: err.message,
             });
         } catch (updateErr) {
-            console.error("[Worker] Failed to update analysis status:", updateErr.message);
+            logger.error("Failed to update analysis status", { error: updateErr.message });
         }
 
         try {
@@ -121,7 +122,7 @@ analysisWorker.on("failed", async (job, err) => {
 });
 
 analysisWorker.on("completed", (job) => {
-    console.log(`[Worker] Job ${job.id} completed successfully`);
+    logger.info(`Job ${job.id} completed successfully`);
 });
 
 module.exports = { analysisWorker };

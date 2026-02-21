@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const { PrismaClient } = require("@prisma/client");
+const logger = require("../config/logger");
 
 const prisma = new PrismaClient();
 
@@ -78,13 +79,9 @@ async function fireWebhook(userId, event, payload) {
                 signal: AbortSignal.timeout(10000), // 10s timeout
             });
 
-            console.log(
-                `[Webhook] ${event} → ${webhook.url} — ${response.status}`
-            );
+            logger.info(`Webhook delivered`, { event, url: webhook.url, status: response.status });
         } catch (err) {
-            console.error(
-                `[Webhook] Failed to deliver ${event} to ${webhook.url}:`, err.message
-            );
+            logger.error(`Webhook delivery failed`, { event, url: webhook.url, error: err.message });
         }
     }
 }

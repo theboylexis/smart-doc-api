@@ -1,0 +1,33 @@
+# .dockerignore — Works like .gitignore but for Docker.
+# Files listed here are NOT copied into the image during `COPY . .`
+# This keeps the image small and avoids leaking secrets.
+
+node_modules
+npm-debug.log
+
+# Never bake secrets into an image!
+.env
+.env.*
+!.env.example
+
+# Git history is useless inside a container
+.git
+.gitignore
+
+# Tests are not needed in production
+tests
+jest.config.js
+
+# IDE / OS files
+.vscode
+.DS_Store
+
+# Docker files don't need to be inside the image
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Documentation
+README.md
+DEPLOYMENT.md
+*.postman_collection.json

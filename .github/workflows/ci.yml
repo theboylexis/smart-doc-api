@@ -1,0 +1,75 @@
+# ===================================================================
+# GITHUB ACTIONS — CI Pipeline
+# ===================================================================
+# GitHub Actions automatically runs tasks when you push code or open
+# a pull request. This is called CI (Continuous Integration).
+#
+# WHY CI MATTERS:
+#   - Catches bugs before they reach production
+#   - Runs your tests on a clean machine (not just your laptop)
+#   - Gives you confidence that PRs won't break things
+#   - Shows a green ✅ or red ❌ badge on every PR
+#
+# KEY CONCEPTS:
+#   - Workflow: This entire YAML file — a set of automated steps
+#   - Job:      A group of steps that run on the same machine
+#   - Step:     A single action (install deps, run tests, etc.)
+#   - Runner:   The virtual machine that executes the job
+# ===================================================================
+
+name: CI — Tests
+
+# WHEN does this run?
+on:
+  push:
+    branches: [main]           # Run on every push to main
+  pull_request:
+    branches: [main]           # Run on every PR targeting main
+
+jobs:
+  test:
+    # Run on a fresh Ubuntu machine (GitHub provides these for free)
+    runs-on: ubuntu-latest
+
+    # Node version matrix — test against the version(s) you support
+    strategy:
+      matrix:
+        node-version: [18]
+
+    steps:
+      # Step 1: Check out your code onto the runner
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Install the correct Node.js version
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"          # Cache node_modules between runs (faster!)
+
+      # Step 3: Install dependencies (same as in Dockerfile — npm ci for reproducibility)
+      - name: Install dependencies
+        run: npm ci
+
+      # Step 4: Generate Prisma client (needed for imports, even in tests)
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      # Step 5: Run the test suite
+      # The env vars here are FAKE — they just satisfy the config validation.
+      # Tests use mocks so no real Postgres/Redis/OpenAI is needed.
+      - name: Run tests
+        run: npx jest --forceExit --verbose
+        env:
+          NODE_ENV: test
+          PORT: 3001
+          DATABASE_URL: postgresql://test:test@localhost:5432/testdb
+          JWT_SECRET: ci-test-secret-key
+          OPENAI_API_KEY: sk-test-fake-key
+          UPSTASH_REDIS_REST_URL: https://fake-redis.upstash.io
+          UPSTASH_REDIS_REST_TOKEN: fake-token
+          CLOUDINARY_CLOUD_NAME: test-cloud
+          CLOUDINARY_API_KEY: "123456"
+          CLOUDINARY_API_SECRET: test-secret
+          REDIS_URL: redis://localhost:6379

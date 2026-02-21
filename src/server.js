@@ -2,6 +2,7 @@ const http = require("http");
 const app = require('./app');
 const config = require('./config');
 const { initSocket } = require('./config/socket');
+const logger = require('./config/logger');
 
 const server = http.createServer(app);
 
@@ -9,5 +10,5 @@ const server = http.createServer(app);
 initSocket(server);
 
 server.listen(config.port, () => {
-    console.log(`Server is running on port ${config.port}`);
+    logger.info(`Server is running on port ${config.port}`);
 });

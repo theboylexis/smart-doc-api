@@ -1,10 +1,8 @@
+const logger = require("../config/logger");
+
 const errorHandler = (err, req, res, next) => {
-    // Log the error (full stack in development only)
-    if (process.env.NODE_ENV === "development") {
-        console.error(err.stack);
-    } else {
-        console.error(err.message);
-    }
+    // Log the error — Winston handles format differences per environment
+    logger.error(err.message, { stack: err.stack, path: req.originalUrl });
 
     // ─── Prisma Errors ──────────────────────────────────────
     if (err.code === "P2002") {
