@@ -1,5 +1,7 @@
 # Smart Doc API
 
+![CI/CD](https://github.com/theboylexis/smart-doc-api/actions/workflows/ci.yml/badge.svg)
+
 <p align="center">
   <b>Production-Ready Document Intelligence API</b><br/>
   Secure document ingestion, AI-powered analysis, caching, rate limiting, and cloud storage.
