@@ -47,9 +47,6 @@ FROM base AS production
 # Copy node_modules from the dependencies stage
 COPY --from=dependencies /app/node_modules ./node_modules
 
-# Copy generated Prisma client
-COPY --from=dependencies /app/src/generated ./src/generated
-
 # Now copy the rest of your source code
 COPY . .
 
