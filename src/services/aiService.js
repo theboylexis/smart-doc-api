@@ -1,6 +1,7 @@
 const OpenAI = require("openai");
 const crypto = require("crypto");
 const redisClient = require("../config/redis");
+const logger = require("../config/logger");
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -34,12 +35,12 @@ async function analyzeDocument(documentText, prompt) {
     try {
         const cached = await redisClient.get(cacheKey);
         if (cached) {
-            console.log("Cache hit for analysis");
+            logger.info("Cache hit for analysis");
             return cached;
         }
     } catch (err) {
         // Redis may be down — continue without cache
-        console.warn("Redis cache read failed:", err.message);
+        logger.warn("Redis cache read failed:", err.message);
     }
 
     // Call OpenAI
@@ -72,7 +73,7 @@ async function analyzeDocument(documentText, prompt) {
     try {
         await redisClient.set(cacheKey, JSON.stringify(parsed), { ex: CACHE_TTL });
     } catch (err) {
-        console.warn("Redis cache write failed:", err.message);
+        logger.warn("Redis cache write failed:", err.message);
     }
 
     return { result: parsed, model: MODEL };

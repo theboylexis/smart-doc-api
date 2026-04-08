@@ -1,25 +1,26 @@
 const { Server } = require("socket.io");
+const logger = require("./logger");
 
 let io;
 
 function initSocket(httpServer) {
     io = new Server(httpServer, {
         cors: {
-            origin: "*",
+            origin: process.env.CORS_ORIGIN || "*",
             methods: ["GET", "POST"],
         },
     });
 
     io.on("connection", (socket) => {
-        console.log("A user connected", socket.id);
+        logger.info("A user connected", { socketId: socket.id });
 
         socket.on("join_room", (data) => {
             socket.join(data.room);
-            console.log(`User ${socket.id} joined room ${data.room}`);
+            logger.info(`User joined room`, { socketId: socket.id, room: data.room });
         });
 
         socket.on("disconnect", () => {
-            console.log("User disconnected", socket.id);
+            logger.info("User disconnected", { socketId: socket.id });
         });
     });
 

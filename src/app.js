@@ -10,7 +10,10 @@ const app = express();
 
 // Middleware
 app.use(helmet());          // Security headers
-app.use(cors());            // Enable CORS
+app.use(cors({
+    origin: process.env.CORS_ORIGIN || '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+}));
 app.use(express.json());    // Parse JSON request bodies
 app.use(requestLogger);     // Log all incoming requests
 app.use(globalLimiter);     // Global rate limit
