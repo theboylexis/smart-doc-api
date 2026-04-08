@@ -57,6 +57,9 @@ ENV NODE_ENV=production
 # done in docker-compose.yml or with `docker run -p`)
 EXPOSE 3000
 
+# Make the start script executable
+RUN chmod +x start.sh
+
 # Create a non-root user for security.
 # Running as root inside a container is risky — if someone exploits
 # your app, they'd have root access. This limits the blast radius.
@@ -64,5 +67,5 @@ RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nodeuser
 USER nodeuser
 
-# The command that runs when the container starts
-CMD ["node", "src/server.js"]
+# Run migrations then start the server
+CMD ["sh", "start.sh"]
