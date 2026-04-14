@@ -1,16 +1,16 @@
 {
   "name": "smart-doc-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "Production-ready document intelligence API with JWT auth, async AI analysis, Redis caching, HMAC-signed webhooks, and real-time updates.",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "test": "npx jest --setupFiles ./tests/setup.js --forceExit"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["express", "openai", "prisma", "postgresql", "redis", "bullmq", "socket.io", "webhooks", "jwt", "docker"],
+  "author": "Alex Marfo Appiah",
+  "license": "MIT",
   "type": "commonjs",
   "dependencies": {
     "@upstash/redis": "^1.36.2",

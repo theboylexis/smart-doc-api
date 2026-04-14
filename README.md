@@ -254,4 +254,4 @@ smart-doc-api/
 
 ## 📄 License
 
-ISC
+[MIT](./LICENSE) © Alex Marfo Appiah
