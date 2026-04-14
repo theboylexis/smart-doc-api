@@ -7,6 +7,12 @@
   Secure document ingestion, AI-powered analysis, caching, rate limiting, and cloud storage.
 </p>
 
+<p align="center">
+  <a href="https://smart-doc-api-production.up.railway.app">Live API</a> •
+  <a href="https://smart-doc-api-production.up.railway.app/api-docs">Swagger Docs</a> •
+  <a href="./smart-doc-api.postman.json">Postman Collection</a>
+</p>
+
 ---
 
 ## 🚀 Overview
@@ -162,6 +168,7 @@ npm run dev
 | `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name | ✅ |
 | `CLOUDINARY_API_KEY` | Cloudinary API key | ✅ |
 | `CLOUDINARY_API_SECRET` | Cloudinary API secret | ✅ |
+| `CORS_ORIGIN` | Allowed CORS origin (defaults to `*`) | ❌ |
 
 ---
 
@@ -181,6 +188,18 @@ npm run dev
 | `DELETE` | `/api/webhooks/:id` | Delete a webhook | ✅ |
 | `GET` | `/api-docs` | Swagger UI documentation | ❌ |
 | `GET` | `/health` | Health check | ❌ |
+
+---
+
+## 🧰 Postman Collection
+
+A pre-configured Postman collection is included at [`smart-doc-api.postman.json`](./smart-doc-api.postman.json).
+
+**How to use:**
+1. Import the file into Postman
+2. The `base_url` variable defaults to the live Railway deployment — change it to `http://localhost:3000` for local testing
+3. Run **Register** → **Login**. The Login request has a test script that auto-saves the JWT to the `auth_token` collection variable
+4. All subsequent requests use the saved token automatically
 
 ---
 

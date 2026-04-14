@@ -17,7 +17,7 @@
     "variable": [
         {
             "key": "base_url",
-            "value": "http://localhost:3000",
+            "value": "https://smart-doc-api-production.up.railway.app",
             "type": "string"
         },
         {
@@ -48,17 +48,9 @@
                             "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
                         },
                         "url": {
-                            "raw": "http://localhost:3000/api/auth/register",
-                            "protocol": "http",
-                            "host": [
-                                "localhost"
-                            ],
-                            "port": "3000",
-                            "path": [
-                                "api",
-                                "auth",
-                                "register"
-                            ]
+                            "raw": "{{base_url}}/api/auth/register",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "auth", "register"]
                         }
                     },
                     "response": []
@@ -96,17 +88,9 @@
                             "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
                         },
                         "url": {
-                            "raw": "http://localhost:3000/api/auth/login",
-                            "protocol": "http",
-                            "host": [
-                                "localhost"
-                            ],
-                            "port": "3000",
-                            "path": [
-                                "api",
-                                "auth",
-                                "login"
-                            ]
+                            "raw": "{{base_url}}/api/auth/login",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "auth", "login"]
                         }
                     },
                     "response": []
@@ -132,17 +116,9 @@
                             ]
                         },
                         "url": {
-                            "raw": "http://localhost:3000/api/documents/upload",
-                            "protocol": "http",
-                            "host": [
-                                "localhost"
-                            ],
-                            "port": "3000",
-                            "path": [
-                                "api",
-                                "documents",
-                                "upload"
-                            ]
+                            "raw": "{{base_url}}/api/documents/upload",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "documents", "upload"]
                         }
                     },
                     "response": []
@@ -153,16 +129,9 @@
                         "method": "GET",
                         "header": [],
                         "url": {
-                            "raw": "http://localhost:3000/api/documents",
-                            "protocol": "http",
-                            "host": [
-                                "localhost"
-                            ],
-                            "port": "3000",
-                            "path": [
-                                "api",
-                                "documents"
-                            ]
+                            "raw": "{{base_url}}/api/documents",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "documents"]
                         }
                     },
                     "response": []
@@ -173,17 +142,9 @@
                         "method": "GET",
                         "header": [],
                         "url": {
-                            "raw": "http://localhost:3000/api/documents/:id",
-                            "protocol": "http",
-                            "host": [
-                                "localhost"
-                            ],
-                            "port": "3000",
-                            "path": [
-                                "api",
-                                "documents",
-                                ":id"
-                            ],
+                            "raw": "{{base_url}}/api/documents/:id",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "documents", ":id"],
                             "variable": [
                                 {
                                     "key": "id",
@@ -203,20 +164,20 @@
                     "name": "Analyze Document",
                     "request": {
                         "method": "POST",
-                        "header": [],
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type\": \"summary\"\n}"
+                        },
                         "url": {
-                            "raw": "http://localhost:3000/api/ai/analyze/:documentId",
-                            "protocol": "http",
-                            "host": [
-                                "localhost"
-                            ],
-                            "port": "3000",
-                            "path": [
-                                "api",
-                                "ai",
-                                "analyze",
-                                ":documentId"
-                            ],
+                            "raw": "{{base_url}}/api/ai/analyze/:documentId",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "ai", "analyze", ":documentId"],
                             "variable": [
                                 {
                                     "key": "documentId",
@@ -233,18 +194,9 @@
                         "method": "GET",
                         "header": [],
                         "url": {
-                            "raw": "http://localhost:3000/api/ai/analyses/:documentId",
-                            "protocol": "http",
-                            "host": [
-                                "localhost"
-                            ],
-                            "port": "3000",
-                            "path": [
-                                "api",
-                                "ai",
-                                "analyses",
-                                ":documentId"
-                            ],
+                            "raw": "{{base_url}}/api/ai/analyses/:documentId",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "ai", "analyses", ":documentId"],
                             "variable": [
                                 {
                                     "key": "documentId",
@@ -275,16 +227,9 @@
                             "raw": "{\n  \"url\": \"https://webhook.site/YOUR-UNIQUE-ID\",\n  \"events\": [\"analysis.completed\"]\n}"
                         },
                         "url": {
-                            "raw": "http://localhost:3000/api/webhooks",
-                            "protocol": "http",
-                            "host": [
-                                "localhost"
-                            ],
-                            "port": "3000",
-                            "path": [
-                                "api",
-                                "webhooks"
-                            ]
+                            "raw": "{{base_url}}/api/webhooks",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "webhooks"]
                         }
                     },
                     "response": []
@@ -295,16 +240,9 @@
                         "method": "GET",
                         "header": [],
                         "url": {
-                            "raw": "http://localhost:3000/api/webhooks",
-                            "protocol": "http",
-                            "host": [
-                                "localhost"
-                            ],
-                            "port": "3000",
-                            "path": [
-                                "api",
-                                "webhooks"
-                            ]
+                            "raw": "{{base_url}}/api/webhooks",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "webhooks"]
                         }
                     },
                     "response": []
@@ -315,17 +253,9 @@
                         "method": "DELETE",
                         "header": [],
                         "url": {
-                            "raw": "http://localhost:3000/api/webhooks/:id",
-                            "protocol": "http",
-                            "host": [
-                                "localhost"
-                            ],
-                            "port": "3000",
-                            "path": [
-                                "api",
-                                "webhooks",
-                                ":id"
-                            ],
+                            "raw": "{{base_url}}/api/webhooks/:id",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "webhooks", ":id"],
                             "variable": [
                                 {
                                     "key": "id",
