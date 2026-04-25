@@ -31,16 +31,18 @@ async function analyzeDocument(documentText, prompt) {
     const fullPrompt = prompt.replace("[DOCUMENT]", documentText);
     const cacheKey = getCacheKey(documentText, prompt);
 
-    // Check Redis cache
-    try {
-        const cached = await redisClient.get(cacheKey);
-        if (cached) {
-            logger.info("Cache hit for analysis");
-            return cached;
+    // Check Redis cache (skip if client unavailable)
+    if (redisClient) {
+        try {
+            const cached = await redisClient.get(cacheKey);
+            if (cached) {
+                logger.info("Cache hit for analysis");
+                return cached;
+            }
+        } catch (err) {
+            // Redis may be down — continue without cache
+            logger.warn("Redis cache read failed:", err.message);
         }
-    } catch (err) {
-        // Redis may be down — continue without cache
-        logger.warn("Redis cache read failed:", err.message);
     }
 
     // Call OpenAI
@@ -69,11 +71,13 @@ async function analyzeDocument(documentText, prompt) {
         parsed = { raw: aiResult };
     }
 
-    // Cache the result in Redis
-    try {
-        await redisClient.set(cacheKey, JSON.stringify(parsed), { ex: CACHE_TTL });
-    } catch (err) {
-        logger.warn("Redis cache write failed:", err.message);
+    // Cache the result in Redis (skip if client unavailable)
+    if (redisClient) {
+        try {
+            await redisClient.set(cacheKey, JSON.stringify(parsed), { ex: CACHE_TTL });
+        } catch (err) {
+            logger.warn("Redis cache write failed:", err.message);
+        }
     }
 
     return { result: parsed, model: MODEL };

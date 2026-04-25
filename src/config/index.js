@@ -5,8 +5,6 @@ const requiredEnvVars = [
     'DATABASE_URL',
     'JWT_SECRET',
     'OPENAI_API_KEY',
-    'UPSTASH_REDIS_REST_URL',
-    'UPSTASH_REDIS_REST_TOKEN',
 ];
 
 const missingVars = requiredEnvVars.filter((envVar) => !process.env[envVar]);

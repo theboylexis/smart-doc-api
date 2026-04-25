@@ -1,10 +1,12 @@
 const { PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
-const { s3Client, bucketName } = require("../config/s3");
+const { getS3Client, getBucketName } = require("../config/s3");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const uploadDocument = async (file, userId) => {
+    const s3Client = getS3Client();
+    const bucketName = getBucketName();
     const fileKey = `documents/${userId}/${Date.now()}-${file.originalname}`;
 
     await s3Client.send(new PutObjectCommand({
@@ -17,7 +19,7 @@ const uploadDocument = async (file, userId) => {
     const fileUrl = await getSignedUrl(
         s3Client,
         new GetObjectCommand({ Bucket: bucketName, Key: fileKey }),
-        { expiresIn: 3600 }
+        { expiresIn: 3600, signingRegion: 'us-east-1' }
     );
 
     const document = await prisma.document.create({
@@ -44,10 +46,13 @@ const getDocumentById = async (documentId, userId) => {
         throw new Error("Document not found");
     }
 
+    const s3Client = getS3Client();
+    const bucketName = getBucketName();
+
     const fileUrl = await getSignedUrl(
         s3Client,
         new GetObjectCommand({ Bucket: bucketName, Key: document.fileKey }),
-        { expiresIn: 3600 }
+        { expiresIn: 3600, signingRegion: 'us-east-1' }
     );
 
     return { ...document, fileUrl };
