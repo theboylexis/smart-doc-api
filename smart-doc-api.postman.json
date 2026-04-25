@@ -16,11 +16,6 @@
     },
     "variable": [
         {
-            "key": "base_url",
-            "value": "https://smart-doc-api-production.up.railway.app",
-            "type": "string"
-        },
-        {
             "key": "auth_token",
             "value": "",
             "type": "string"

@@ -1,0 +1,13 @@
+{
+    "id": "smart-doc-api-env-production",
+    "name": "Smart Doc API - Production",
+    "values": [
+        {
+            "key": "base_url",
+            "value": "https://smart-doc-api-production.up.railway.app",
+            "type": "default",
+            "enabled": true
+        }
+    ],
+    "_postman_variable_scope": "environment"
+}
