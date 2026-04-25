@@ -15,7 +15,8 @@ describe("Document Endpoints", () => {
             mockPrisma.document.create.mockResolvedValue({
                 id: "doc-123",
                 fileName: "test.pdf",
-                fileUrl: "https://res.cloudinary.com/test/raw/upload/test-file.pdf",
+                fileUrl: "https://s3.amazonaws.com/test-bucket/test-file.pdf",
+                fileKey: "documents/user-123/test-file.pdf",
                 fileType: "application/pdf",
                 fileSize: 1024,
                 userId: "user-123",
@@ -79,6 +80,7 @@ describe("Document Endpoints", () => {
             mockPrisma.document.findUnique.mockResolvedValue({
                 id: validUUID,
                 fileName: "test.pdf",
+                fileKey: "documents/user-123/test-file.pdf",
                 userId: "user-123",
             });
 

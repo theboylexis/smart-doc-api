@@ -28,6 +28,7 @@ model Document {
   id        String @id @default(uuid())
   fileName  String
   fileUrl   String
+  fileKey   String
   fileType  String
   fileSize  Int
   status    String @default("uploaded")
