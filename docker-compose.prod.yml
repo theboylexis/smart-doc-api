@@ -1,0 +1,49 @@
+# ===================================================================
+# DOCKER COMPOSE — Production Stack
+# ===================================================================
+# Postgres lives on Neon (cloud) — DATABASE_URL in .env points to it,
+# so we only run redis + app locally.
+#
+# Differences from docker-compose.yml (dev):
+#   - No host port mapping on redis (only reachable inside
+#     the app-network — safer, smaller attack surface)
+#   - app port 3000 is also NOT published to the host; a reverse proxy
+#     (nginx, Caddy, Traefik, etc.) on the host should forward to it
+#   - All env vars come from a .env file rather than being inlined
+#   - Custom bridge network keeps these services isolated from other
+#     compose stacks on the same host
+# ===================================================================
+
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    expose:
+      - "3000"
+    networks:
+      - app-network
+    depends_on:
+      redis:
+        condition: service_healthy
+
+volumes:
+  redis_data:
+
+networks:
+  app-network:
+    driver: bridge
