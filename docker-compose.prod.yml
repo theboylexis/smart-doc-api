@@ -7,8 +7,8 @@
 # Differences from docker-compose.yml (dev):
 #   - No host port mapping on redis (only reachable inside
 #     the app-network — safer, smaller attack surface)
-#   - app port 3000 is also NOT published to the host; a reverse proxy
-#     (nginx, Caddy, Traefik, etc.) on the host should forward to it
+#   - app port 3000 IS published to the host so Nginx (running on the
+#     host, not in compose) can reverse-proxy to it
 #   - All env vars come from a .env file rather than being inlined
 #   - Custom bridge network keeps these services isolated from other
 #     compose stacks on the same host
@@ -33,8 +33,8 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-    expose:
-      - "3000"
+    ports:
+      - "127.0.0.1:3000:3000"
     networks:
       - app-network
     depends_on:
