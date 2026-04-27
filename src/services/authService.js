@@ -1,12 +1,13 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { PrismaClient } = require("@prisma/client");
+const ApiError = require("../utils/ApiError");
 const prisma = new PrismaClient();
 
 const registerUser = async (email, password, name) => {
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-        throw new Error("User already exists");
+        throw new ApiError("User already exists", 409);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -26,11 +27,11 @@ const registerUser = async (email, password, name) => {
 const loginUser = async (email, password) => {
     const userByEmail = await prisma.user.findUnique({ where: { email } });
     if (!userByEmail) {
-        throw new Error("Invalid Credentials")
+        throw new ApiError("Invalid credentials", 401);
     }
     const isPasswordValid = await bcrypt.compare(password, userByEmail.password);
     if (!isPasswordValid) {
-        throw new Error("Invalid Credentials")
+        throw new ApiError("Invalid credentials", 401);
     }
 
     const token = jwt.sign(

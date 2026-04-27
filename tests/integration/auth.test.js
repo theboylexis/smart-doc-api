@@ -30,6 +30,20 @@ describe("Auth Endpoints", () => {
             expect(res.body.user.password).toBeUndefined();
         });
 
+        it("should return 409 if user already exists", async () => {
+            mockPrisma.user.findUnique.mockResolvedValue({
+                id: "user-123",
+                email: "newuser@example.com",
+            });
+
+            const res = await request(app)
+                .post("/api/auth/register")
+                .send({ name: "New User", email: "newuser@example.com", password: "password123" });
+
+            expect(res.status).toBe(409);
+            expect(res.body.error).toBe("User already exists");
+        });
+
         it("should return 400 for missing fields", async () => {
             const res = await request(app).post("/api/auth/register").send({});
             expect(res.status).toBe(400);
@@ -89,12 +103,13 @@ describe("Auth Endpoints", () => {
             expect(res.body.error).toBe("Validation failed");
         });
 
-        it("should return 500 for wrong credentials", async () => {
+        it("should return 401 for wrong credentials", async () => {
             mockPrisma.user.findUnique.mockResolvedValue(null);
             const res = await request(app)
                 .post("/api/auth/login")
                 .send({ email: "wrong@example.com", password: "password123" });
-            expect(res.status).toBe(500);
+            expect(res.status).toBe(401);
+            expect(res.body.error).toBe("Invalid credentials");
         });
     });
 });
