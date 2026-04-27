@@ -15,6 +15,12 @@ const mockPrisma = {
         findMany: jest.fn(),
         update: jest.fn(),
     },
+    refreshToken: {
+        create: jest.fn(() => Promise.resolve({ id: "rt-mock" })),
+        findUnique: jest.fn(),
+        update: jest.fn(() => Promise.resolve({})),
+        updateMany: jest.fn(() => Promise.resolve({ count: 0 })),
+    },
     $connect: jest.fn(),
     $disconnect: jest.fn(),
 };

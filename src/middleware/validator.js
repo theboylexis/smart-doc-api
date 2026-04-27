@@ -40,6 +40,13 @@ const loginRules = [
     validate,
 ];
 
+const refreshTokenBodyRules = [
+    body("refreshToken")
+        .notEmpty().withMessage("refreshToken is required")
+        .isString().withMessage("refreshToken must be a string"),
+    validate,
+];
+
 // ─── Document validators ────────────────────────────────────
 
 const documentIdRules = [
@@ -68,6 +75,7 @@ const getAnalysesRules = [
 module.exports = {
     registerRules,
     loginRules,
+    refreshTokenBodyRules,
     documentIdRules,
     analyzeRules,
     getAnalysesRules,

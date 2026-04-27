@@ -1,4 +1,10 @@
-const { registerUser, loginUser } = require("../services/authService");
+const {
+    registerUser,
+    loginUser,
+    refreshTokens,
+    logout,
+    logoutAll,
+} = require("../services/authService");
 
 const registerController = async (req, res, next) => {
     try {
@@ -8,7 +14,7 @@ const registerController = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-}
+};
 
 const loginController = async (req, res, next) => {
     try {
@@ -18,6 +24,41 @@ const loginController = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-}
+};
 
-module.exports = { registerController, loginController };
+const refreshController = async (req, res, next) => {
+    try {
+        const { refreshToken } = req.body || {};
+        const tokens = await refreshTokens(refreshToken);
+        res.status(200).json({ message: "Tokens refreshed", ...tokens });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const logoutController = async (req, res, next) => {
+    try {
+        const { refreshToken } = req.body || {};
+        await logout(refreshToken);
+        res.status(200).json({ message: "Logged out" });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const logoutAllController = async (req, res, next) => {
+    try {
+        await logoutAll(req.user.id);
+        res.status(200).json({ message: "Logged out from all devices" });
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = {
+    registerController,
+    loginController,
+    refreshController,
+    logoutController,
+    logoutAllController,
+};

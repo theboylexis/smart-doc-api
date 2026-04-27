@@ -9,14 +9,24 @@
         "bearer": [
             {
                 "key": "token",
-                "value": "{{auth_token}}",
+                "value": "{{access_token}}",
                 "type": "string"
             }
         ]
     },
     "variable": [
         {
-            "key": "auth_token",
+            "key": "base_url",
+            "value": "http://localhost:3000",
+            "type": "string"
+        },
+        {
+            "key": "access_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "refresh_token",
             "value": "",
             "type": "string"
         }
@@ -59,9 +69,13 @@
                                 "type": "text/javascript",
                                 "exec": [
                                     "const res = pm.response.json();",
-                                    "if (res.result && res.result.token) {",
-                                    "    pm.collectionVariables.set('auth_token', res.result.token);",
-                                    "    console.log('Token saved!');",
+                                    "if (res.result && res.result.accessToken) {",
+                                    "    pm.collectionVariables.set('access_token', res.result.accessToken);",
+                                    "    console.log('Access token saved!');",
+                                    "}",
+                                    "if (res.result && res.result.refreshToken) {",
+                                    "    pm.collectionVariables.set('refresh_token', res.result.refreshToken);",
+                                    "    console.log('Refresh token saved!');",
                                     "}"
                                 ]
                             }
@@ -86,6 +100,118 @@
                             "raw": "{{base_url}}/api/auth/login",
                             "host": ["{{base_url}}"],
                             "path": ["api", "auth", "login"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Refresh Tokens",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const res = pm.response.json();",
+                                    "if (res.accessToken) {",
+                                    "    pm.collectionVariables.set('access_token', res.accessToken);",
+                                    "    console.log('Access token rotated!');",
+                                    "}",
+                                    "if (res.refreshToken) {",
+                                    "    pm.collectionVariables.set('refresh_token', res.refreshToken);",
+                                    "    console.log('Refresh token rotated!');",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/refresh",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "auth", "refresh"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Logout",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    pm.collectionVariables.set('access_token', '');",
+                                    "    pm.collectionVariables.set('refresh_token', '');",
+                                    "    console.log('Tokens cleared.');",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/logout",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "auth", "logout"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Logout All Devices",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    pm.collectionVariables.set('access_token', '');",
+                                    "    pm.collectionVariables.set('refresh_token', '');",
+                                    "    console.log('Tokens cleared.');",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/logout-all",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "auth", "logout-all"]
                         }
                     },
                     "response": []
