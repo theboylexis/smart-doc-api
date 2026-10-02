@@ -1,64 +1,49 @@
 # ===================================================================
 # GITHUB ACTIONS — CI Pipeline
 # ===================================================================
-# GitHub Actions automatically runs tasks when you push code or open
-# a pull request. This is called CI (Continuous Integration).
-#
-# WHY CI MATTERS:
-#   - Catches bugs before they reach production
-#   - Runs your tests on a clean machine (not just your laptop)
-#   - Gives you confidence that PRs won't break things
-#   - Shows a green ✅ or red ❌ badge on every PR
+# Runs automated tests on every push to main and every pull request
+# targeting main.
 #
 # KEY CONCEPTS:
-#   - Workflow: This entire YAML file — a set of automated steps
+#   - Workflow: This entire YAML file
 #   - Job:      A group of steps that run on the same machine
-#   - Step:     A single action (install deps, run tests, etc.)
+#   - Step:     A single action
 #   - Runner:   The virtual machine that executes the job
 # ===================================================================
 
 name: CI — Tests
 
-# WHEN does this run?
 on:
   push:
-    branches: [main]           # Run on every push to main
+    branches: [main]
+
   pull_request:
-    branches: [main]           # Run on every PR targeting main
+    branches: [main]
 
 jobs:
   test:
-    # Run on a fresh Ubuntu machine (GitHub provides these for free)
     runs-on: ubuntu-latest
 
-    # Node version matrix — test against the version(s) you support
     strategy:
       matrix:
         node-version: [18]
 
     steps:
-      # Step 1: Check out your code onto the runner
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Install the correct Node.js version
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "npm"          # Cache node_modules between runs (faster!)
+          cache: "npm"
 
-      # Step 3: Install dependencies (same as in Dockerfile — npm ci for reproducibility)
       - name: Install dependencies
         run: npm ci
 
-      # Step 4: Generate Prisma client (needed for imports, even in tests)
       - name: Generate Prisma client
         run: npx prisma generate
 
-      # Step 5: Run the test suite
-      # The env vars here are FAKE — they just satisfy the config validation.
-      # Tests use mocks so no real Postgres/Redis/OpenAI is needed.
       - name: Run tests
         run: npx jest --forceExit --verbose
         env:
@@ -73,23 +58,3 @@ jobs:
           CLOUDINARY_API_KEY: "123456"
           CLOUDINARY_API_SECRET: test-secret
           REDIS_URL: redis://localhost:6379
-
-  deploy:
-    # Deploy to EC2 only after tests pass, and only on push to main
-    # (skips PRs — we don't want to deploy unmerged code)
-    needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Deploy to EC2 over SSH
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd /home/ubuntu/smart-doc-api
-            git pull origin main
-            docker-compose -f docker-compose.prod.yml down
-            docker-compose -f docker-compose.prod.yml up -d --build
